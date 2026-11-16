@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1514">
+  <meta name="description" content="Hyperliquid cohort allocations, actual open trades, and verified xyz-majority profitable traders. Public sources, clear coverage.">
+  <title>Cat Desk — Hyperliquid trader analytics</title>
+  <link rel="icon" href="assets/cat.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <script src="nav.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#cohorts">Skip to data</a>
+  <header class="topbar">
+    <a class="brand" href="index.html"><img src="assets/cat.svg" width="34" height="34" alt=""><span>CAT DESK<span class="brand-divider">/</span><span class="brand-network">HYPERLIQUID</span></span></a>
+    <button class="nav-burger" type="button" aria-expanded="false" aria-controls="site-nav">MENU</button>
+    <nav id="site-nav" aria-label="Main navigation">
+      <a href="index.html" class="nav-home">Overview</a>
+      <div class="nav-dd"><button type="button" aria-expanded="false">Cohorts</button><div class="nav-menu">
+        <a href="index.html#cohorts">Where the money sits</a>
+        <a href="index.html#allocation">Asset allocation</a>
+        <a href="index.html#book">Inside the book</a>
+        <a href="index.html#positions">Largest open positions</a>
+      </div></div>
+      <div class="nav-dd"><button type="button" aria-expanded="false">XYZ desk</button><div class="nav-menu">
+        <a href="xyz.html#matrix">XYZ cohort matrix</a>
+        <a href="xyz.html#pair-detail">Pair breakdown</a>
+        <a href="xyz.html#pair-trades">Reported trades</a>
+        <a href="index.html#xyz">xyz specialists</a>
+        <a href="index.html#markets">xyz market tape</a>
+      </div></div>
+      <div class="nav-dd"><button type="button" aria-expanded="false">TradFi</button><div class="nav-menu">
+        <a href="xyz.html#tradfi">All TradFi pairs</a>
+        <a href="xyz.html#tradfi-indices">Indices</a>
+        <a href="xyz.html#tradfi-commodities">Commodities &amp; energy</a>
+        <a href="xyz.html#tradfi-fx">FX &amp; rates</a>
+        <a href="xyz.html#tradfi-etfs">ETFs &amp; funds</a>
+        <a href="xyz.html#tradfi-equities">Single-name equities</a>
+      </div></div>
+      <div class="nav-dd"><button type="button" aria-expanded="false">Sources</button><div class="nav-menu">
+        <a href="index.html#sources">Data sources</a>
+        <a href="xyz.html#method">xyz coverage &amp; method</a>
+      </div></div>
+    </nav>
+    <span class="desk-tag">PUBLIC DATA · READ ONLY</span>
+  </header>
+
+  <main class="container">
+    <section class="hero" aria-labelledby="page-title">
+      <div><p class="eyebrow">THE POSITIONING DESK <span>/ 01</span></p><h1 id="page-title">Follow the positions.</h1><p class="intro">Who’s allocated where. What they’re trading. Who’s actually making money.</p></div>
+      <div class="hero-cat"><img src="assets/cat.svg" width="92" height="92" alt="An original mint pixel cat"><span>eyes on the book.</span></div>
+    </section>
+
+    <div class="statusbar"><span id="freshness" role="status">Loading source snapshot…</span><div><a href="data/snapshot.json" download="hyperliquid-snapshot.json">Download JSON ↓</a><button id="reload" class="text-button" type="button">Reload snapshot ↻</button></div></div>
+    <div id="notice" class="notice" role="status" hidden></div>
+    <noscript><p class="notice">Enable JavaScript to view the dashboard. The complete dataset is also available in <a href="data/snapshot.json">snapshot.json</a>.</p></noscript>
+    <section class="kpis" aria-label="PnL cohort totals" id="kpis"><p class="muted">Reading public cohort data…</p></section>
+
+    <section id="cohorts" class="section" aria-labelledby="cohort-heading">
+      <div class="section-head"><div><p class="eyebrow">01 / WALLET COHORTS</p><h2 id="cohort-heading">Where the money sits</h2></div><div class="segmented" role="group" aria-label="Group cohorts by"><button type="button" data-group="pnl" aria-pressed="true">All-time PnL</button><button type="button" data-group="size" aria-pressed="false">Account size</button></div></div>
+      <p id="cohort-explanation" class="section-note">Cohorts use all-time perp PnL. Exposure is the current open book across the source’s tracked perp venues.</p>
+      <div class="panel cohort-panel"><div class="panel-meta"><span>SELECT A COHORT TO INSPECT ITS TRADES</span><span class="legend"><i class="long-dot"></i>Long <i class="short-dot"></i>Short</span></div><div class="table-scroll"><table class="cohort-table"><thead><tr><th scope="col">Cohort / range</th><th scope="col">Wallets <span class="muted">/ open</span></th><th scope="col">Gross exposure</th><th scope="col" class="bias-col">Long / short allocation</th><th scope="col">Net exposure</th><th scope="col">Largest allocation</th></tr></thead><tbody id="cohort-rows"></tbody></table></div></div>
+
+      <div class="detail-grid">
+        <section class="panel allocation-panel" id="allocation" aria-labelledby="allocation-heading"><div class="panel-heading"><div><p class="eyebrow" id="selected-label">COHORT DETAIL</p><h3 id="allocation-heading">Asset allocation</h3></div><span class="chip" id="allocation-count">Top 10 + other</span></div><div id="allocation-summary" class="allocation-summary"></div><div id="allocations" class="allocation-list"></div><p class="footnote" id="allocation-footnote"></p></section>
+        <section class="panel book-panel" id="book" aria-labelledby="book-heading"><div class="panel-heading"><div><p class="eyebrow">CURRENT EXPOSURE</p><h3 id="book-heading">Inside the book</h3></div><span class="mini-cat" aria-hidden="true">/\_/\</span></div><div id="book-stats" class="book-stats"></div><div class="chart-header"><span>Gross open exposure</span><span id="history-range"></span></div><div id="exposure-chart" class="exposure-chart"></div><p class="footnote">Exposure counts long and short notionals. It is not cash invested, margin used, or one-sided exchange open interest.</p></section>
+      </div>
+
+      <section class="panel positions-panel" id="positions" aria-labelledby="positions-heading"><div class="panel-heading"><div><p class="eyebrow">THE ACTUAL TRADES</p><h3 id="positions-heading">Largest open positions</h3></div><div class="filter-pair"><label class="sr-only" for="position-market">Position market</label><select id="position-market"><option value="all">All markets</option><option value="xyz">xyz only</option></select><label class="sr-only" for="position-side">Position side</label><select id="position-side"><option value="all">Both sides</option><option value="long">Long</option><option value="short">Short</option></select></div></div><p class="footnote" id="position-coverage"></p><div class="table-scroll"><table><thead><tr><th scope="col">Wallet</th><th scope="col">Trade</th><th scope="col">Position value</th><th scope="col">Entry</th><th scope="col">Mark</th><th scope="col">Unrealized PnL</th><th scope="col">Liq. price</th><th scope="col">Leverage</th></tr></thead><tbody id="position-rows"></tbody></table></div><button id="more-positions" class="more-button" type="button" hidden>Show more positions ↓</button></section>
+    </section>
+
+    <section id="xyz" class="section" aria-labelledby="xyz-heading"><div class="section-head"><div><p class="eyebrow">02 / XYZ SPECIALISTS</p><h2 id="xyz-heading">Profitable. Mostly xyz.</h2></div><span class="chip">30-DAY WINDOW</span></div><p class="section-note">Positive 30-day account PnL. More than 50% of executed perp volume on <code>xyz:</code> markets. Complete available fill windows required.</p>
+      <div class="panel"><div id="trader-coverage" class="coverage-strip">Loading trader coverage…</div><div class="table-scroll"><table class="trader-table"><thead><tr><th scope="col">Rank / wallet</th><th scope="col">30d account PnL ↓</th><th scope="col">xyz volume share</th><th scope="col">30d xyz volume</th><th scope="col">Largest current trade</th><th scope="col">Open gross</th></tr></thead><tbody id="trader-rows"></tbody></table></div><p class="footnote table-footnote">Ranked within the screened wallet set, not a global xyz leaderboard. Account PnL is the official leaderboard’s month metric; it is not xyz-only profit. Select a wallet to inspect its open trades.</p></div>
+      <section class="panel trader-detail" id="trader-detail" aria-labelledby="trader-detail-heading" hidden><div class="panel-heading"><div><p class="eyebrow">WALLET POSITION SHEET</p><h3 id="trader-detail-heading"></h3></div><a id="trader-explorer" target="_blank" rel="noopener noreferrer">Open in explorer ↗</a></div><p class="section-note" id="trader-detail-meta"></p><div class="table-scroll"><table><thead><tr><th scope="col">Trade</th><th scope="col">Position value</th><th scope="col">Book share</th><th scope="col">Entry</th><th scope="col">Mark</th><th scope="col">Unrealized PnL</th><th scope="col">Liq. price</th><th scope="col">Leverage</th></tr></thead><tbody id="trader-position-rows"></tbody></table></div><button type="button" id="more-trader-positions" class="more-button" hidden>Show more wallet positions ↓</button></section>
+      <details class="method-details"><summary>Screening method & incomplete histories <span id="incomplete-count"></span></summary><div id="trader-method"></div></details>
+    </section>
+
+    <section id="markets" class="section" aria-labelledby="market-heading"><div class="section-head"><div><p class="eyebrow">03 / XYZ MARKET TAPE</p><h2 id="market-heading">What’s trading on xyz</h2></div><span class="small muted" id="market-time"></span></div><div class="panel"><div id="market-totals" class="coverage-strip"></div><div class="table-scroll"><table><thead><tr><th scope="col">Market</th><th scope="col">Mark price</th><th scope="col">24h change</th><th scope="col">24h volume ↓</th><th scope="col">Open interest</th><th scope="col">Hourly funding</th></tr></thead><tbody id="market-rows"></tbody></table></div><button type="button" id="more-markets" class="more-button">Show all xyz markets ↓</button></div></section>
+
+    <section id="sources" class="section source-section" aria-labelledby="sources-heading"><div class="section-head"><div><p class="eyebrow">04 / THE RECEIPTS</p><h2 id="sources-heading">Sources, not stories.</h2></div><img src="assets/cat.svg" width="42" height="42" alt=""></div><div class="source-grid"><article><span class="source-number">01</span><h3>HyperTracker / CMM</h3><p>The same public feed used by your daily Telegram cohort report. Cohort definitions, exposure, top-ten allocations, and largest positions.</p><a href="https://app.coinmarketman.com/hypertracker" target="_blank" rel="noopener noreferrer">HyperTracker ↗</a> · <a href="https://dw3ji7n7thadj.cloudfront.net/aggregator/segments.json" target="_blank" rel="noopener noreferrer">Raw cohort feed ↗</a><p class="source-time" id="cohort-source-time"></p></article><article><span class="source-number">02</span><h3>Hyperliquid / primary data</h3><p>Official leaderboard for account PnL. Info API for executed fills, current positions on every registered perp DEX, and xyz market context.</p><a href="https://stats-data.hyperliquid.xyz/Mainnet/leaderboard" target="_blank" rel="noopener noreferrer">Leaderboard JSON ↗</a> · <a href="https://hyperliquid.gitbook.io/hyperliquid-docs/for-developers/api/info-endpoint" target="_blank" rel="noopener noreferrer">API docs ↗</a><p class="source-time" id="primary-source-time"></p></article><article><span class="source-number">03</span><h3>Venice / RPC availability</h3><p id="venice-note">Checking supported networks…</p><a href="https://api.venice.ai/api/v1/crypto/rpc/networks" target="_blank" rel="noopener noreferrer">Live network list ↗</a><p class="source-time" id="venice-source-time"></p></article></div>
+      <details class="method-details"><summary>How to read this desk</summary><div class="reading-guide"><p><strong>Two cohort lenses.</strong> All-time PnL and account-size cohorts overlap. Totals use only the PnL lens; never add both lenses together. Size bands are the source’s classifications, not independently recalculated balances.</p><p><strong>Allocation.</strong> Dollar figures are gross open notional. Top-ten assets are reported by the source; “Other” is the remaining notional. Long share is long ÷ (long + short), calculated here rather than using the source’s equity-normalized bias field.</p><p><strong>Different observation times.</strong> Cohort totals and cohort detail files are independent snapshots. Detail percentages use the detail file’s own denominator. Wallet position sheets are queried directly and can be newer than cohort aggregates.</p><p><strong>Wallets, not people.</strong> Subaccounts and hedges elsewhere are not consolidated. A large short is an observed position, not evidence of a trader’s overall market view. Open-position profit share is not an historical win rate.</p><p><strong>Refresh.</strong> This is a timestamped static snapshot, refreshed by the included workflow when deployed. Reload fetches the latest published file. Stale sections remain dated; unavailable data is not replaced with invented values.</p></div></details>
+    </section>
+    <footer><a class="footer-brand" href="#">/\_/\ &nbsp; CAT DESK</a><span>Independent Hyperliquid analytics. Original pixel cats. No NFT affiliation.</span><span id="build-time"></span></footer>
+  </main>
+</body>
+</html>

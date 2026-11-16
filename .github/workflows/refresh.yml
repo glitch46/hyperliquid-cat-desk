@@ -1,0 +1,39 @@
+name: Refresh trader data
+
+on:
+  schedule:
+    - cron: '17 */4 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hyperliquid-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 55
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check collector accounting
+        run: python -m unittest discover -s scripts -p 'test_*.py' -v
+      - name: Refresh public data
+        id: collect
+        continue-on-error: true
+        run: python -u scripts/refresh.py --trader-limit 120 --top-traders 10
+      - name: Publish latest verified snapshot
+        run: |
+          git add data/snapshot.json
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Refresh Hyperliquid snapshot'
+            git push
+          fi
+      - name: Surface partial refresh failure
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
