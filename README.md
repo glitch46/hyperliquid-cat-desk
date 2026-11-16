@@ -12,7 +12,7 @@ python -m http.server 8080
 
 Open **http://localhost:8080** from this directory. The included `data/snapshot.json` is real public-source data, with observation times. Open the page over HTTP rather than `file://`.
 
-The dedicated **[xyz cohort desk](xyz.html)** is at **http://localhost:8080/xyz.html**, linked in the overview's navigation.
+The dedicated **[xyz cohort desk](xyz.html)** is at **http://localhost:8080/xyz.html**, linked in the overview's navigation. The published copy lives at **https://glitch46.github.io/hyperliquid-cat-desk/**.
 
 To update:
 
@@ -127,15 +127,20 @@ At initial research, the live network list did not include Hyperliquid or HyperE
 
 ## Deploy / scheduled updates
 
-Create a GitHub repository for this folder and enable GitHub Pages from its default branch, root directory. The included workflow runs every four hours at minute 17 and supports a manual run. The workflow publishes refreshed JSON with the repository's normal `GITHUB_TOKEN` (Contents: write); no repository secrets are required. Allow write permissions for Actions in the repository settings. A partial refresh publishes successful sections, retains dated last-good sections, and marks the workflow failed.
+Published from this repository with GitHub Pages (default branch, root):
 
-This project has not been committed, pushed, or deployed by the local build.
+- Dashboard: **https://glitch46.github.io/hyperliquid-cat-desk/**
+- xyz cohort desk: **https://glitch46.github.io/hyperliquid-cat-desk/xyz.html**
+- Repo: **https://github.com/glitch46/hyperliquid-cat-desk**
+
+The included workflow runs every four hours at minute 17 and supports a manual run. It publishes refreshed JSON with the repository's normal `GITHUB_TOKEN` (Contents: write); no repository secrets are required. The Actions workflow permission is set to read/write so the refresh commit can push. A partial refresh publishes successful sections, retains dated last-good sections, and marks the workflow failed.
 
 ## Checks
 
 ```powershell
 python -m unittest discover -s scripts -p "test_*.py" -v
 node --check app.js
+node --check nav.js
 node --check xyz.js
 ```
 
@@ -147,6 +152,7 @@ Tests cover executed-notional accounting, spot exclusion, cross-venue denominato
 index.html                 Dashboard structure
 styles.css                 Responsive mint/dark desk styling
 app.js                     Rendering, filters, charts, freshness, wallet sheets
+nav.js                     Shared dropdown navigation (both pages)
 xyz.html                   Dedicated xyz pair / PnL cohort dashboard
 xyz.js                     Pair matrix, breakdowns, samples, coverage
 xyz.css                    xyz matrix and pair-specific responsive styling
