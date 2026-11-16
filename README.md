@@ -43,10 +43,11 @@ The scan is intentionally paced below Hyperliquid's shared 1,200-weight/minute I
 
 Both pages share one menu. The `<nav id="site-nav">` markup is identical in `index.html` and `xyz.html`, behaviour lives in `nav.js`, and the test suite fails if the two ever diverge.
 
-- **Overview** → `index.html`
-- **Cohorts** → where the money sits, asset allocation, inside the book, largest open positions
+- **Overview** → dashboard home, where the money sits, asset allocation, inside the book, largest open positions
 - **XYZ desk** → cohort matrix, pair breakdown, open trades, **TradFi markets**, xyz specialists
 - **Sources** → data sources, coverage & method
+
+Cohorts is no longer a separate top-level item: its four section links now sit under **Overview**, keeping the bar at three dropdowns.
 
 TradFi has no top-level menu of its own: it lives inside **XYZ desk**, because the TradFi instruments are xyz markets. The per-group submenus (`#tradfi-indices`, `#tradfi-commodities`, `#tradfi-fx`, `#tradfi-etfs`, `#tradfi-equities`) were dropped from the menu to keep it short, but those hashes still preselect the corresponding tab in the TradFi section.
 

@@ -14,7 +14,6 @@
 .topbar nav{display:flex;align-items:center;gap:2px;margin:0}
 .topbar nav>a,.nav-dd>button{display:flex;align-items:center;gap:7px;padding:8px 11px;border:0;background:transparent;font:12px var(--sans);color:var(--muted);white-space:nowrap}
 .topbar nav>a:hover,.nav-dd>button:hover{color:var(--text);text-decoration:none}
-.topbar nav .nav-home[aria-current=page]{color:var(--mint)}
 .nav-dd{position:relative}
 .nav-dd>button{cursor:pointer}
 .nav-dd>button::after{content:'';width:4px;height:4px;border-right:1px solid currentColor;border-bottom:1px solid currentColor;transform:rotate(45deg) translate(-1px,-1px);opacity:.65;transition:transform .15s ease}
