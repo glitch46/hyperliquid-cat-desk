@@ -45,11 +45,12 @@ Both pages share one menu. The `<nav id="site-nav">` markup is identical in `ind
 
 - **Overview** → `index.html`
 - **Cohorts** → where the money sits, asset allocation, inside the book, largest open positions
-- **XYZ desk** → cohort matrix, pair breakdown, reported trades, xyz specialists, market tape
-- **TradFi** → all TradFi pairs, then each instrument group
-- **Sources** → data sources, xyz coverage & method
+- **XYZ desk** → cohort matrix, pair breakdown, open trades, **TradFi markets**, xyz specialists
+- **Sources** → data sources, coverage & method
 
-Dropdowns open on hover for pointer devices and on click/tap for everything else; they close on Escape, on an outside click, or after a link is followed. Below 900px the whole menu collapses behind a **MENU** button. TradFi group links use `#tradfi-indices`, `#tradfi-commodities`, `#tradfi-fx`, `#tradfi-etfs` and `#tradfi-equities`, which the page uses to preselect that tab.
+TradFi has no top-level menu of its own: it lives inside **XYZ desk**, because the TradFi instruments are xyz markets. The per-group submenus (`#tradfi-indices`, `#tradfi-commodities`, `#tradfi-fx`, `#tradfi-etfs`, `#tradfi-equities`) were dropped from the menu to keep it short, but those hashes still preselect the corresponding tab in the TradFi section.
+
+Menus open on hover for pointer devices and on click/tap everywhere else; a click pins the menu open, and Escape, an outside click, or following a link closes it. A transparent 9px bridge covers the gap between the trigger and the panel so hover survives the trip down into the submenu — without it the menu closed the moment the pointer left the button. Below 900px the whole menu collapses behind a **MENU** button.
 
 ### xyz pair coverage and symbols
 
