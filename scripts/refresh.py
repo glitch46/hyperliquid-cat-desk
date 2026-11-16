@@ -238,7 +238,7 @@ def get_traders(cohorts, limit, top_count, budget_seconds=480):
     checkpoint = ROOT / '.cache' / 'screening.json'
     if checkpoint.exists():
         cached = json.loads(checkpoint.read_text(encoding='utf-8'))
-        if (end - cached.get('end', 0) < 120 * 60_000
+        if (end - cached.get('end', 0) < 480 * 60_000
                 and cached.get('limit') == limit):
             start, end = cached['start'], cached['end']
             checked = cached['checked']

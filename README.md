@@ -26,7 +26,7 @@ For a quick cohort/market update, including the xyz pair dashboard:
 python scripts/refresh.py --cohorts-only
 ```
 
-The scan is intentionally paced below Hyperliquid's shared 1,200-weight/minute IP limit. New fill-history screening has an eight-minute budget by default, followed by position queries for the selected wallets. Known large xyz-position holders are checked first. The page reports successfully checked, deferred, incomplete, and failed wallet counts. For a broader scan use `--screen-budget 1800`. A two-hour screening checkpoint under `.cache/` lets repeated local runs resume with the same exact volume window and original PnL observation. Cohort/market data publishes before the longer screen starts. Failed sections retain their last good data with original timestamps and a visible refresh error.
+The scan is intentionally paced below Hyperliquid's shared 1,200-weight/minute IP limit. New fill-history screening has an eight-minute budget by default (`--screen-budget`), followed by position queries for the selected wallets. Known large xyz-position holders are checked first. The page reports successfully checked, deferred, incomplete, and failed wallet counts. For a broader scan use `--screen-budget 1800`. A screening checkpoint under `.cache/` lets repeated runs resume the same volume window (reused for up to eight hours), so the scheduled workflow accumulates coverage across runs instead of restarting the pool every four hours. Cohort/market data publishes before the longer screen starts. Failed sections retain their last good data with original timestamps and a visible refresh error.
 
 ## What's on the desk
 
@@ -158,7 +158,8 @@ nav.js                     Shared dropdown navigation (both pages)
 xyz.html                   Dedicated xyz pair / PnL cohort dashboard
 xyz.js                     Pair matrix, breakdowns, samples, coverage
 xyz.css                    xyz matrix and pair-specific responsive styling
-assets/cat.svg             Original pixel cat (no NFT artwork copied)
+assets/cat-detective.svg   Original detective-cat mascot (hand-authored SVG,
+                           drawn in a similar style to the reference, not a copy)
 data/snapshot.json         Public, timestamped real-source data
 scripts/refresh.py         Standard-library collector
 scripts/test_refresh.py    Financial-accounting and coverage checks

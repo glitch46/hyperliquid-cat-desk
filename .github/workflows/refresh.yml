@@ -23,10 +23,23 @@ jobs:
           python-version: '3.12'
       - name: Check collector accounting
         run: python -m unittest discover -s scripts -p 'test_*.py' -v
+      - name: Restore screening checkpoint
+        uses: actions/cache@v4
+        with:
+          path: .cache
+          key: hl-screen-${{ github.run_id }}
+          restore-keys: |
+            hl-screen-
       - name: Refresh public data
         id: collect
         continue-on-error: true
-        run: python -u scripts/refresh.py --trader-limit 120 --top-traders 10
+        run: python -u scripts/refresh.py --trader-limit 120 --top-traders 10 --screen-budget 1500
+      - name: Save screening checkpoint
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: .cache
+          key: hl-screen-${{ github.run_id }}
       - name: Publish latest verified snapshot
         run: |
           git add data/snapshot.json
