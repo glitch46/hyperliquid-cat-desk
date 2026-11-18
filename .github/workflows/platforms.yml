@@ -28,9 +28,30 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verify data accounting
+        run: python -m unittest discover -s scripts -p 'test_*.py' -v
       - name: Check public eToro endpoint access
         if: inputs.probe_only == true
         env:
           ETORO_API_KEY: ${{ secrets.ETORO_API_KEY }}
           ETORO_USER_KEY: ${{ secrets.ETORO_USER_KEY }}
         run: python -u scripts/etoro.py
+      - name: Collect end-of-day platform analytics
+        if: inputs.probe_only != true
+        id: collect
+        continue-on-error: true
+        env:
+          ETORO_API_KEY: ${{ secrets.ETORO_API_KEY }}
+          ETORO_USER_KEY: ${{ secrets.ETORO_USER_KEY }}
+        run: python -u scripts/platforms.py --sample-limit 60
+      - name: Publish timestamped public analytics
+        if: inputs.probe_only != true
+        run: |
+          git add data/platforms.json data/platforms_history.json
+          if ! git diff --cached --quiet; then
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Refresh cross-platform snapshot'
+            git push
+          fi
+      - name: Surface collection failures
+        if: steps.collect.outcome == 'failure'
+        run: exit 1
