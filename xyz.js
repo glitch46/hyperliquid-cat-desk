@@ -1,7 +1,7 @@
 'use strict';
 
 const el = (id) => document.getElementById(id);
-const desk = { data: null, limit: '10', pair: 'xyz:NVDA', cohort: 8, tradeLimit: 10, tradfiGroup: 'all', tradfiLimit: 40 };
+const desk = { data: null, limit: '10', pair: new URLSearchParams(location.search).get('pair') || 'xyz:NVDA', cohort: 8, tradeLimit: 10, tradfiGroup: 'all', tradfiLimit: 40 };
 const esc = (value) => String(value ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const known = (value) => value != null && Number.isFinite(Number(value));
 const usd = (value) => {

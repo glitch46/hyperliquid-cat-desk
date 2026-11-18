@@ -97,9 +97,11 @@ def universe(snapshot):
              'volumeRank': row['volumeRank'], 'identity': identity(row['coin'])} for row in items]
 
 
-def overlaps(symbol, scope, allow_reference=False):
+def overlaps(symbol, scope, allow_reference=False, name=None):
     return [row['coin'] for row in scope if row['identity']['symbol'] == symbol
-            and (allow_reference or row['identity']['kind'] == 'same_underlying')]
+            and (allow_reference or row['identity']['kind'] == 'same_underlying')
+            and (not row['identity'].get('nameMustContain')
+                 or row['identity']['nameMustContain'].lower() in (name or '').lower())]
 
 
 def get_hyperliquid(snapshot, scope):
@@ -135,7 +137,7 @@ def get_robinhood(scope):
     published, rows = parse_robinhood(fetch(ROBINHOOD))
     pairs = {}
     for row in rows:
-        row.update({'value': row['rank'], 'unit': 'Published index rank', 'overlaps': overlaps(row['symbol'], scope)})
+        row.update({'value': row['rank'], 'unit': 'Published index rank', 'overlaps': overlaps(row['symbol'], scope, name=row['name'])})
         for coin in row['overlaps']:
             pairs[coin] = {'rank': row['rank'], 'symbol': row['symbol'], 'name': row['name']}
     return {'name': 'Robinhood', 'status': 'ok', 'observedAt': published, 'collectedAt': stamp(),
@@ -185,7 +187,7 @@ def get_schwab(scope):
     pairs = {}
     for row in rows:
         row.update({'value': row['rank'], 'unit': 'Rank within net-buy/net-sell list',
-                    'overlaps': overlaps(row['symbol'], scope)})
+                    'overlaps': overlaps(row['symbol'], scope, name=row['name'])})
         for coin in row['overlaps']:
             pairs[coin] = {key: row[key] for key in ('symbol', 'rank', 'direction')}
     return {'name': 'Schwab', 'status': 'ok', 'observedAt': date.isoformat(), 'collectedAt': stamp(),
@@ -321,7 +323,7 @@ def get_etoro(scope, sample_limit=60):
             continue
         leaders.append({'symbol': instrument['symbol'], 'name': instrument['name'],
                         'instrumentId': instrument['instrumentId'], 'value': instrument['viewers7d'],
-                        'unit': 'Unique viewers / 7d', 'overlaps': overlaps(instrument['symbol'], scope)})
+                        'unit': 'Unique viewers / 7d', 'overlaps': overlaps(instrument['symbol'], scope, name=instrument['name'])})
     leaders.sort(key=lambda row: -row['value'])
     for index, row in enumerate(leaders):
         row['rank'] = index + 1
@@ -361,6 +363,8 @@ def get_etoro(scope, sample_limit=60):
                             'positions': portfolio_positions(data, instrument_coins)})
         except (ApiError, ValueError):
             failures += 1
+        if (len(traders) + failures) % 10 == 0:
+            print(f'eToro: {len(traders)} public portfolios read; {failures} unavailable', flush=True)
     pairs = summarize_etoro(traders, [row['coin'] for row in scope])
     for coin, row in pairs.items():
         row['mapping'] = mappings[coin]

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1514">
+  <meta name="description" content="Compare twenty XYZ pairs with eToro public portfolios, Robinhood index investments, and Schwab client activity. Individual platform views and source-labeled comparisons.">
+  <title>Across Platforms — Cat Desk</title>
+  <link rel="icon" href="assets/cat-detective.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="platforms.css">
+  <script src="nav.js" defer></script>
+  <script src="platforms.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#comparison">Skip to platform comparison</a>
+  <header class="topbar">
+    <a class="brand" href="index.html"><img src="assets/cat-detective.svg" width="34" height="34" alt=""><span>CAT DESK<span class="brand-divider">/</span><span class="brand-network">HYPERLIQUID</span></span></a>
+    <button class="nav-burger" type="button" aria-expanded="false" aria-controls="site-nav">MENU</button>
+    <nav id="site-nav" aria-label="Main navigation">
+      <div class="nav-dd"><button type="button" aria-expanded="false">Overview</button><div class="nav-menu">
+        <a href="index.html">Dashboard home</a>
+        <a href="index.html#cohorts">Where the money sits</a>
+        <a href="index.html#allocation">Asset allocation</a>
+        <a href="index.html#book">Inside the book</a>
+        <a href="index.html#positions">Largest open positions</a>
+      </div></div>
+      <div class="nav-dd"><button type="button" aria-expanded="false">XYZ desk</button><div class="nav-menu">
+        <a href="xyz.html#matrix">Cohort matrix</a>
+        <a href="xyz.html#pair-detail">Pair breakdown</a>
+        <a href="xyz.html#pair-trades">Open trades</a>
+        <a href="xyz.html#tradfi">TradFi markets</a>
+        <a href="index.html#xyz">xyz specialists</a>
+        <a href="platforms.html">Across platforms</a>
+      </div></div>
+      <div class="nav-dd"><button type="button" aria-expanded="false">Sources</button><div class="nav-menu">
+        <a href="index.html#sources">Data sources</a>
+        <a href="xyz.html#method">Coverage &amp; method</a>
+      </div></div>
+    </nav>
+    <span class="desk-tag">PUBLIC DATA · READ ONLY</span>
+  </header>
+
+  <main class="container">
+    <section class="hero" aria-labelledby="page-title"><div><p class="eyebrow">THE CROSS-PLATFORM DESK <span>/ 03</span></p><h1 id="page-title">One ticker. Different perspectives.</h1><p class="intro">Twenty XYZ pairs. Public trader books, broker holdings signals, and client activity—each on its own terms.</p></div><div class="hero-cat"><img src="assets/cat-detective.svg" width="92" height="92" alt="Detective cat mascot"><span>check every source.</span></div></section>
+    <div class="statusbar"><span id="platform-freshness" role="status">Loading platform snapshots…</span><div><a href="data/platforms.json" download="cat-desk-platforms.json">Download JSON ↓</a><button type="button" id="platform-reload" class="text-button">Reload snapshot ↻</button></div></div>
+    <div class="notice" id="platform-notice" role="status" hidden></div>
+    <noscript><p class="notice">Enable JavaScript or download the <a href="data/platforms.json">platform snapshot</a>.</p></noscript>
+    <div class="platform-toolbar"><div><label for="platform-view">Platform view</label><select id="platform-view"><option value="all">All platforms / compare</option><option value="hyperliquid">Hyperliquid / XYZ</option><option value="etoro">eToro</option><option value="robinhood">Robinhood</option><option value="schwab">Schwab</option><option value="ibkr">IBKR / access status</option></select></div><span>Daily collection · 22:40 UTC, Monday–Friday</span></div>
+    <section id="platform-kpis" class="kpis" aria-label="Cross-platform coverage"></section>
+
+    <section id="comparison" class="section" aria-labelledby="comparison-heading"><div class="section-head"><div><p class="eyebrow">01 / TWENTY-PAIR COMPARISON</p><h2 id="comparison-heading">The same underlying, side by side</h2></div><div class="platform-field"><label for="hl-cohort">Hyperliquid cohort</label><select id="hl-cohort"></select></div></div><p class="section-note">This combines source coverage, not incompatible totals. Hyperliquid dollars, eToro holdings percentages, Robinhood index ranks, and Schwab net-flow ranks keep their original units and reporting periods.</p>
+      <fieldset class="compare-sources" id="compare-sources"><legend>Include in comparison</legend><label><input type="checkbox" value="hyperliquid" checked> Hyperliquid</label><label><input type="checkbox" value="etoro" checked> eToro</label><label><input type="checkbox" value="robinhood" checked> Robinhood</label><label><input type="checkbox" value="schwab" checked> Schwab</label></fieldset>
+      <div class="panel"><div class="panel-meta"><span id="comparison-coverage"></span><span>SELECT A TICKER TO INSPECT</span></div><div class="table-scroll"><table class="platform-comparison"><thead id="comparison-head"></thead><tbody id="comparison-rows"></tbody></table></div><p class="footnote table-footnote">“Not in published list” is not zero holdings or a flat position. Reference instruments are labeled and excluded from direct-underlying coverage counts. No cross-platform dollar sum or synthetic buy percentage is calculated.</p></div>
+      <div id="platform-cards" class="platform-cards" aria-label="Platform measurement and freshness"></div>
+    </section>
+
+    <section id="platform-pair" class="section" aria-labelledby="platform-pair-heading"><div class="section-head"><div><p class="eyebrow">02 / PAIR POSITION SHEET</p><h2 id="platform-pair-heading">Pair detail</h2></div><div class="platform-field"><label for="platform-pair-select">XYZ pair</label><select id="platform-pair-select"></select></div></div><div id="pair-facts" class="pair-facts"></div>
+      <section id="etoro-cohorts" class="panel" aria-labelledby="etoro-cohort-heading"><div class="panel-heading"><div><p class="eyebrow">ETORO / SAMPLED PUBLIC INVESTORS</p><h3 id="etoro-cohort-heading">Current-month return cohorts</h3></div><span class="chip">PERCENTAGE RETURNS · NOT LIFETIME $ PNL</span></div><p class="section-note panel-note" id="etoro-sample-note"></p><div class="table-scroll"><table><thead><tr><th scope="col">eToro MTD return cohort</th><th scope="col">Sampled portfolios</th><th scope="col">Direct holders</th><th scope="col">Long / short holders</th><th scope="col">Direct-allocation split</th><th scope="col">Mean allocation / portfolio</th></tr></thead><tbody id="etoro-cohort-rows"></tbody></table></div><p class="footnote table-footnote">Allocations are source-reported portfolio percentages, weighted equally across sampled accounts. A holder with long and short positions can appear in both holder counts. Nested copy portfolios are not expanded; no account balance or dollar exposure is inferred.</p></section>
+    </section>
+
+    <section id="public-traders" class="section" aria-labelledby="public-trader-heading"><div class="section-head"><div><p class="eyebrow">03 / TRADER-LEVEL EVIDENCE</p><h2 id="public-trader-heading">Public positions on this pair</h2></div><div class="platform-field"><label for="public-cohort-filter">eToro return filter</label><select id="public-cohort-filter"><option value="all">All sampled investors</option><option value="positive">Non-negative MTD return</option><option value="negative">Negative MTD return</option><option value="strong_gain">MTD ≥ 10%</option><option value="gain">MTD 0% to &lt; 10%</option><option value="loss">MTD −10% to &lt; 0%</option><option value="large_loss">MTD &lt; −10%</option></select></div></div><div class="panel"><p class="coverage-strip" id="public-position-coverage"></p><div class="table-scroll"><table><thead><tr><th scope="col">Trader / source</th><th scope="col">Side</th><th scope="col">Position size / source basis</th><th scope="col">Entry / native quote</th><th scope="col">Position PnL / source basis</th><th scope="col">Source cohort / return</th></tr></thead><tbody id="public-position-rows"></tbody></table></div><button type="button" class="more-button" id="more-public-positions" hidden>Show more public positions ↓</button></div>
+      <section id="etoro-investors" class="panel investor-panel" aria-labelledby="investor-heading"><div class="panel-heading"><div><p class="eyebrow">ETORO / SCREENED SET ONLY</p><h3 id="investor-heading">Investors holding the twenty pairs</h3></div><span class="chip">SORTED BY MTD RETURN</span></div><div class="table-scroll"><table><thead><tr><th scope="col">Public investor</th><th scope="col">Current-month return ↓</th><th scope="col">Allocation to tracked pairs</th><th scope="col">Relevant direct positions</th><th scope="col">Copiers</th><th scope="col">Risk score</th></tr></thead><tbody id="investor-rows"></tbody></table></div><button class="more-button" id="more-investors" type="button" hidden>Show more investors ↓</button><p class="footnote table-footnote">Bounded discovery combines most-copied, highest-gain, lowest-gain, and most-trades ranking requests. It is not a platform-wide profitability leaderboard. MTD is the current calendar month, not rolling 30 days.</p></section>
+    </section>
+
+    <section id="platform-activity" class="section" aria-labelledby="activity-heading"><div class="section-head"><div><p class="eyebrow">04 / BROADER PLATFORM UNIVERSES</p><h2 id="activity-heading">Activity, attention, and ownership</h2></div><span class="chip">XYZ OVERLAPS HIGHLIGHTED</span></div><p class="section-note">Each list keeps its own definition. Seven-day instrument views are attention—not trades. Monthly net buys are flow—not current long holdings. Exchange-wide volume is counted once, under its actual venue.</p><div id="activity-boards" class="activity-boards"></div></section>
+
+    <section id="platform-history" class="section" aria-labelledby="history-heading"><div class="section-head"><div><p class="eyebrow">05 / DAILY RECORD</p><h2 id="history-heading">Observed over time</h2></div><span class="small muted" id="history-note"></span></div><p class="section-note">Daily records for the selected pair retain source timestamps. Percentage columns have different denominators and are not averaged together. The historical Hyperliquid series consistently follows Money Printer.</p><div class="panel"><div class="table-scroll"><table><thead id="platform-history-head"></thead><tbody id="platform-history-rows"></tbody></table></div></div></section>
+
+    <section id="platform-method" class="section source-section" aria-labelledby="platform-method-heading"><div class="section-head"><div><p class="eyebrow">06 / SOURCE RULES</p><h2 id="platform-method-heading">Comparable facts. Explicit differences.</h2></div><img src="assets/cat-detective.svg" width="42" height="42" alt=""></div><div class="reading-guide platform-guide"><p><strong>Scope.</strong> Position comparisons follow exactly the twenty highest-volume pairs in the latest XYZ snapshot. Activity lists use each source’s broader published universe. Unsupported synthetics stay unmapped. Stock, ETF, CFD, index-reference, and perpetual contracts remain distinct instruments.</p><p><strong>eToro.</strong> Only public-market and named public-investor endpoints are queried using read-only credentials in GitHub Actions. No private account positions or balances are collected. Public portfolio <code>investmentPct</code> and position <code>netProfit</code> are percentage points; v2 ranking <code>gain</code> is a decimal fraction. Dollar PnL is not inferred. The instrument buy/sell-holdings fields do not document a dollar-notional denominator.</p><p><strong>Robinhood.</strong> The published Investor Index top ten supplies ranks, not ticker-level dollar weights, executed volume, or all customer holdings. Its methodology excludes ETFs, options, penny stocks, and crypto. Shared Social posts are not treated as a complete portfolio feed.</p><p><strong>Schwab.</strong> STAX supplies a monthly overall score and a published table of top net buys/sells. Only table entries are used for ticker direction; mentions in the narrative do not become trades. An unlisted ticker’s direction is unknown.</p><p><strong>IBKR.</strong> No IBKR account/market scanner is connected. Its documented position endpoints apply to authorized accounts, while market scanners describe market-wide activity—not all IBKR customers’ portfolios or broker-only execution volume.</p><p><strong>Combined view.</strong> Select platforms to compare available facts. Source coverage is counted; incompatible measurements are not summed. People using multiple platforms cannot be deduplicated, so no “unique traders across all brokers” number is shown. Failed refreshes preserve last-good observations with their original dates.</p></div></section>
+    <footer><a class="footer-brand" href="index.html">/\_/\ &nbsp; CAT DESK</a><span>Independent analytics · public-source observations</span><span id="platform-build-time"></span></footer>
+  </main>
+</body>
+</html>

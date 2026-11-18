@@ -1,6 +1,8 @@
 """Source identity, units, sample accounting, and credential-boundary tests."""
 import json
 import unittest
+import re
+from urllib.parse import urlsplit
 from unittest.mock import patch
 
 import etoro
@@ -15,6 +17,9 @@ class InstrumentIdentityTests(unittest.TestCase):
     def test_ticker_reuse_cannot_match_unrelated_spcx_fund(self):
         rows = [{'internalSymbolFull': 'SPCX', 'instrumentId': 1, 'displayname': 'SPAC ETF'}]
         self.assertIsNone(p.match_market(p.identity('xyz:SPCX'), rows))
+        scope = [{'coin': 'xyz:SPCX', 'identity': p.identity('xyz:SPCX')}]
+        self.assertEqual(p.overlaps('SPCX', scope, name='SPAC ETF'), [])
+        self.assertEqual(p.overlaps('SPCX', scope, name='SpaceX'), ['xyz:SPCX'])
 
     def test_ambiguous_symbols_are_not_selected_arbitrarily(self):
         rows = [{'internalSymbolFull': 'NVDA', 'instrumentId': value} for value in (1, 2)]
@@ -130,6 +135,27 @@ class PublicSourceTests(unittest.TestCase):
             client = etoro.Client()
         with self.assertRaises(ValueError):
             client.get('/api/v1/trading/info/real/pnl')
+
+
+class NavigationTests(unittest.TestCase):
+    def test_all_three_pages_have_the_same_navigation(self):
+        navs = []
+        for name in ('index.html', 'xyz.html', 'platforms.html'):
+            text = (p.ROOT / name).read_text(encoding='utf-8')
+            navs.append(re.search(r'<nav id="site-nav".*?</nav>', text, re.S).group(0))
+        self.assertEqual(navs[0], navs[1])
+        self.assertEqual(navs[0], navs[2])
+        self.assertEqual(navs[0].count('href="platforms.html"'), 1)
+
+    def test_all_shared_navigation_destinations_exist(self):
+        text = (p.ROOT / 'index.html').read_text(encoding='utf-8')
+        nav = re.search(r'<nav id="site-nav".*?</nav>', text, re.S).group(0)
+        for href in re.findall(r'href="([^"]+)"', nav):
+            link = urlsplit(href)
+            path = p.ROOT / link.path
+            self.assertTrue(path.exists(), href)
+            if link.fragment:
+                self.assertIn('id="' + link.fragment + '"', path.read_text(encoding='utf-8'), href)
 
 
 if __name__ == '__main__':
