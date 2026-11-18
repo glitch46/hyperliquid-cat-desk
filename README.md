@@ -36,6 +36,7 @@ The scan is intentionally paced below Hyperliquid's shared 1,200-weight/minute I
 - **Asset allocation:** each cohort's ten largest markets, their long/short split, and the exact remaining notional labeled Other. Source top-ten coverage is visible.
 - **Inside the book:** aggregate exposure ratio, positive open-PnL share, cohort membership change, and source-reported gross-exposure history.
 - **Actual trades:** the cohort's largest 50 source-reported positions, with xyz/side filters, entry, mark, notional, unrealized PnL, liquidation, leverage, and wallet links.
+- **Crypto liquidation watch:** native crypto positions near their reported liquidation estimates, ranked by notional or distance. Includes verified wallet links, prices, a per-asset price ladder, and gross notional grouped by adverse-move bands. Defaults to $100k+ and within 5%; excludes XYZ/TradFi, spot, and metal-backed proxies.
 - **Profitable xyz specialists:** verified >50% xyz share of executed **perp notional** in a complete 30-day fill window, ranked by positive official month **account PnL**. Wallet sheets query all currently registered perp DEXs.
 - **xyz market tape:** mark, daily price change, daily executed volume, one-sided open interest, and hourly funding from the exchange.
 - **Dedicated xyz cohort desk (`xyz.html`):** top-10/top-20 volume-ranked pair matrix against all eight PnL cohorts. Select a cell or pair for long/short dollars, net exposure, gross pair share, position counts, cohort comparisons, and public wallet samples with cohort/side filters. The matrix uses complete per-asset cohort feeds, not top-ten cohort allocations.
@@ -45,7 +46,7 @@ The scan is intentionally paced below Hyperliquid's shared 1,200-weight/minute I
 
 All three pages share one menu. The `<nav id="site-nav">` markup is identical in `index.html`, `xyz.html`, and `platforms.html`; behavior lives in `nav.js`.
 
-- **Overview** → dashboard home, where the money sits, asset allocation, inside the book, largest open positions
+- **Overview** → dashboard home, where the money sits, asset allocation, inside the book, largest open positions, **Crypto liquidation watch**
 - **XYZ desk** → cohort matrix, pair breakdown, open trades, **TradFi markets**, xyz specialists, **Across platforms**
 - **Sources** → data sources, coverage & method
 
@@ -71,6 +72,49 @@ The first source's `cohortMetrics` contains per-pair exposure across both size a
 The second source is a **public position sample**, separately labeled and deduplicated. Cohort membership uses its profile segment IDs. Visible sample trades are never summed as a substitute for aggregate cohort exposure. A sample's empty filter result is not evidence of a flat cohort.
 
 The existing full refresh and `--cohorts-only` refresh both update `snapshot.xyz`. The cross-platform desk has an independent daily collector, so it needs no trader-fill rescan.
+
+## Crypto liquidation watch and frequent public refresh
+
+**[Open the crypto watch](https://glitch46.github.io/hyperliquid-cat-desk/#liquidations)** from **Overview → Crypto liquidation watch** on any tab.
+
+### Verification and chart definitions
+
+The watch discovers candidate wallets from HyperTracker's largest-position samples across cohort files, deduplicating overlapping size/PnL classifications. Prior watch positions can seed subsequent verification. A bounded selection of up to **60 wallets** prioritizes large nearby positions, closest estimates, and largest notional. Discovery prices are only a selection hint; they never become verified liquidation facts.
+
+Each selected wallet is queried directly using Hyperliquid's public `clearinghouseState` on the **native perp DEX**. Supported crypto symbols come from native `metaAndAssetCtxs`; HIP-3/XYZ, spot, stock/index symbols, and metal-backed proxies are excluded. The published dataset includes native positions with at least **$100,000 gross notional** and a positive reported liquidation price.
+
+- Mark = `positionValue / abs(szi)`, from the **same account response** as `liquidationPx`.
+- Long adverse distance = `(mark - liquidationPx) / mark`.
+- Short adverse distance = `(liquidationPx - mark) / mark`.
+- Null, zero, non-finite, and negative liquidation prices are unavailable, not zero risk.
+- A crossed estimate remains labeled **at/beyond estimate**; no completed liquidation is inferred.
+- Failed account reads do not become flat accounts. Successful empty account reads remove old positions. If every read fails, the previous watch retains its original verification times.
+- `walletChecks` records successful wallet observations, including empty replies, so browser-live changes are only replaced by a newer verification of that **same wallet**.
+
+Filters cover asset, side, minimum notional, required adverse move (1/3/5/10/20%), and largest/closest ranking. The **price ladder** plots the largest twelve matching positions for one asset against a newest-verified mark reference. Points indicate position size; rows rank by notional. The **distance-band chart** sums long/short USD gross notionals in the filtered sample. It is not cash at risk, collateral loss, one-sided exchange open interest, or predicted liquidation volume.
+
+Coverage and verification timestamps are shown. This is a **bounded verified sample**, not an exhaustive global ranking of every large or near-liquidation trader. Thirty-minute-old watch data/rows are explicitly flagged.
+
+### Low-cost refresh tiers
+
+| Data | Schedule / behavior | Cost control |
+| --- | --- | --- |
+| Public cohorts, XYZ quotes/cohorts, crypto watch | Every 15 minutes, at :07/:22/:37/:52 | Public endpoints; no broker key or fill-history scan; up to 60 wallets with bounded retries and metadata/source reads. |
+| Main/XYZ open browser tab | Check published snapshots every five minutes while visible | HTTP cache revalidation avoids downloading unchanged files repeatedly. Newer source sections replace older ones independently. |
+| Crypto watch in an open visible tab | Check published watch every minute | Conditional cache validation; verification timestamps remain visible. |
+| Optional live crypto checks | At most five displayed native wallets per minute while enabled and visible; manual per-wallet check also available | Free, public, read-only Info API. Off by default; no server or authenticated broker connection required. |
+| Full fill-history / xyz specialist screen | Existing four-hour schedule | Not repeated by frequent jobs; ranking/window timestamps stay unchanged. |
+| eToro / Robinhood / Schwab | Existing weekday end-of-day collection | No added authenticated eToro calls from fast refresh or the crypto watch. |
+
+The fast workflow is `Refresh public markets and crypto liquidations`, using a **standard Ubuntu GitHub-hosted runner in this public repository**. [GitHub's billing policy](https://docs.github.com/en/billing/concepts/product-billing/github-actions) states that standard runner compute for public repositories remains free. **Expected incremental Actions compute: $0 under the current public-repository configuration.** There are no new paid RPC/data services, custom runners, cache uploads, or artifact uploads in this job. Normal source rate limits, Pages limits, and GitHub scheduling/deployment delays still apply; the displayed times describe actual observations rather than an exact delivery guarantee.
+
+The frequent workflow has independent concurrency so a 25-minute fill scan cannot block it. Refresh workflows rebase their disjoint data-file commits before pushing to handle concurrent publications without force-pushing. Cohort files are reused with original dates when the source status is unchanged; refreshing only quotes never re-dates old positions/history.
+
+```powershell
+python scripts/fast_refresh.py --wallet-limit 60 --budget 180
+```
+
+`data/fast.json` overlays newer public source sections in `data/snapshot.json` via `data-feed.js`. `data/liquidations.json` is independently timestamped. The Overview/XYZ **Download JSON** action exports the merged published snapshot actually displayed, rather than an older base file. The watch's **Published JSON** link downloads the scheduled observation; optional in-browser live checks are separately labeled and do not alter the public file.
 
 ## Cross-platform desk
 
@@ -185,7 +229,7 @@ Published from this repository with GitHub Pages (default branch, root):
 - Cross-platform desk: **https://glitch46.github.io/hyperliquid-cat-desk/platforms.html**
 - Repo: **https://github.com/glitch46/hyperliquid-cat-desk**
 
-The Hyperliquid workflow runs every four hours at minute 17; the broker workflow runs after the US close on weekdays. Both support manual runs and share a concurrency group so refresh commits cannot race. Hyperliquid uses public endpoints; the broker workflow uses the two eToro secrets. The normal `GITHUB_TOKEN` publishes public JSON with Contents: write. A partial refresh retains dated last-good sections and surfaces failures.
+The frequent public workflow runs every fifteen minutes; the full Hyperliquid workflow runs every four hours at minute 17; the broker workflow runs after the US close on weekdays. All support manual runs. Full/broker runs share their existing concurrency group; frequent refresh is independent and uses disjoint files plus rebase-before-push. The broker workflow uses the two eToro secrets; fast refresh uses none. The normal `GITHUB_TOKEN` publishes public JSON with Contents: write. A partial refresh retains dated last-good sections and surfaces failures.
 
 ## Checks
 
@@ -195,6 +239,8 @@ node --check app.js
 node --check nav.js
 node --check xyz.js
 node --check platforms.js
+node --check liquidations.js
+node --check data-feed.js
 ```
 
 Tests cover executed-notional accounting, spot exclusion, cross-venue denominators, fill-boundary deduplication, retention caps, incomplete history, failed requests, signed positions, allocation reconciliation, per-pair net exposure, overlapping cohort exclusion, missing versus flat cohorts, duplicate rejection, and sample deduplication. Browser checks should also cover matrix/pair selection, top-10/top-20 views, trade filters, navigation between dashboards, stale/missing data, and mobile scrolling.
@@ -205,6 +251,9 @@ Tests cover executed-notional accounting, spot exclusion, cross-venue denominato
 index.html                 Dashboard structure
 styles.css                 Responsive mint/dark desk styling
 app.js                     Rendering, filters, charts, freshness, wallet sheets
+data-feed.js               Merge frequent public sections without redating traders
+liquidations.js            Crypto risk table, price ladder, distance bands, live reads
+liquidations.css           Crypto-watch layout and responsive charts
 nav.js                     Shared dropdown navigation (all three pages)
 xyz.html                   Dedicated xyz pair / PnL cohort dashboard
 xyz.js                     Pair matrix, breakdowns, samples, coverage
@@ -215,11 +264,17 @@ platforms.css              Cross-platform desk styling
 assets/cat-detective.svg   Original detective-cat mascot (hand-authored SVG,
                            drawn in a similar style to the reference, not a copy)
 data/snapshot.json         Public, timestamped real-source data
+data/fast.json             Frequent public cohorts / quotes / XYZ cohort observations
+data/liquidations.json     Bounded native-wallet verification / liquidation estimates
 scripts/refresh.py         Standard-library collector
 scripts/test_refresh.py    Financial-accounting and coverage checks
 scripts/etoro.py           Read-only public-market/public-investor API client
 scripts/platforms.py       End-of-day broker collector and 20-pair mapping
 scripts/test_platforms.py  Identity, source units, and sample-accounting checks
+scripts/liquidations.py    Crypto discovery, bounded wallet selection, direct verification
+scripts/fast_refresh.py    Frequent public refresh with no authenticated broker calls
+scripts/test_liquidations.py  Distance / crypto scope / observation freshness tests
 .github/workflows/refresh.yml
 .github/workflows/platforms.yml
+.github/workflows/fast-refresh.yml
 ```

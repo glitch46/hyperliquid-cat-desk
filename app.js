@@ -203,11 +203,10 @@ async function load() {
   $('reload').disabled = true;
   $('reload').textContent = 'Reading snapshot…';
   try {
-    const response = await fetch(`data/snapshot.json?t=${Date.now()}`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`Snapshot HTTP ${response.status}`);
-    const data = await response.json();
+    const data = await window.CatDeskData.load();
     if (data.schemaVersion !== 1 || !Array.isArray(data.cohorts?.items)) throw new Error('Unrecognized snapshot format');
     state.data = data;
+    window.CatDeskData.download(data);
     renderKpis(); renderCohorts(); renderTraders(); renderMarkets(); renderSources();
   } catch (error) {
     $('notice').hidden = false;
@@ -238,3 +237,4 @@ $('more-trader-positions').addEventListener('click', () => { state.traderPositio
 $('more-markets').addEventListener('click', () => { state.allMarkets = !state.allMarkets; renderMarkets(); });
 $('reload').addEventListener('click', load);
 load();
+setInterval(() => { if (document.visibilityState === 'visible' && !$('reload').disabled) load(); }, 300_000);

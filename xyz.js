@@ -190,11 +190,10 @@ async function loadXyz() {
   el('xyz-reload').disabled = true;
   el('xyz-reload').textContent = 'Reading snapshot…';
   try {
-    const response = await fetch(`data/snapshot.json?t=${Date.now()}`, { cache: 'no-store' });
-    if (!response.ok) throw new Error(`Snapshot HTTP ${response.status}`);
-    const data = await response.json();
+    const data = await window.CatDeskData.load();
     if (data.schemaVersion !== 1 || !Array.isArray(data.xyz?.items) || !data.xyz.items.length || !Array.isArray(data.cohorts?.items)) throw new Error('xyz cohort snapshot is not available yet; run the collector with --cohorts-only');
     desk.data = data;
+    window.CatDeskData.download(data);
     if (!markets().some((row) => row.coin === desk.pair)) desk.pair = markets()[0].coin;
     el('pair-select').innerHTML = markets().map((row) => `<option value="${esc(row.coin)}">#${row.volumeRank} · ${esc(symbol(row.coin))} · ${usd(row.volume24h)} / 24h</option>`).join('');
     const selected = el('trade-cohort').value;
@@ -233,3 +232,4 @@ el('more-xyz-trades').addEventListener('click', () => { desk.tradeLimit += 10; r
 el('more-tradfi').addEventListener('click', () => { desk.tradfiLimit = Infinity; renderTradFi(); });
 el('xyz-reload').addEventListener('click', loadXyz);
 loadXyz();
+setInterval(() => { if (document.visibilityState === 'visible' && !el('xyz-reload').disabled) loadXyz(); }, 300_000);

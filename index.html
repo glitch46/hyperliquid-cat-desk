@@ -8,8 +8,11 @@
   <title>Cat Desk — Hyperliquid trader analytics</title>
   <link rel="icon" href="assets/cat-detective.svg" type="image/svg+xml">
   <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="liquidations.css">
   <script src="nav.js" defer></script>
+  <script src="data-feed.js" defer></script>
   <script src="app.js" defer></script>
+  <script src="liquidations.js" defer></script>
 </head>
 <body>
   <a class="skip-link" href="#cohorts">Skip to data</a>
@@ -23,6 +26,7 @@
         <a href="index.html#allocation">Asset allocation</a>
         <a href="index.html#book">Inside the book</a>
         <a href="index.html#positions">Largest open positions</a>
+        <a href="index.html#liquidations">Crypto liquidation watch</a>
       </div></div>
       <div class="nav-dd"><button type="button" aria-expanded="false">XYZ desk</button><div class="nav-menu">
         <a href="xyz.html#matrix">Cohort matrix</a>
@@ -62,6 +66,18 @@
       </div>
 
       <section class="panel positions-panel" id="positions" aria-labelledby="positions-heading"><div class="panel-heading"><div><p class="eyebrow">THE ACTUAL TRADES</p><h3 id="positions-heading">Largest open positions</h3></div><div class="filter-pair"><label class="sr-only" for="position-market">Position market</label><select id="position-market"><option value="all">All markets</option><option value="xyz">xyz only</option></select><label class="sr-only" for="position-side">Position side</label><select id="position-side"><option value="all">Both sides</option><option value="long">Long</option><option value="short">Short</option></select></div></div><p class="footnote" id="position-coverage"></p><div class="table-scroll"><table><thead><tr><th scope="col">Wallet</th><th scope="col">Trade</th><th scope="col">Position value</th><th scope="col">Entry</th><th scope="col">Mark</th><th scope="col">Unrealized PnL</th><th scope="col">Liq. price</th><th scope="col">Leverage</th></tr></thead><tbody id="position-rows"></tbody></table></div><button id="more-positions" class="more-button" type="button" hidden>Show more positions ↓</button></section>
+    </section>
+
+    <section id="liquidations" class="section" aria-labelledby="liq-heading">
+      <div class="section-head"><div><p class="eyebrow">CRYPTO ONLY / LIQUIDATION WATCH</p><h2 id="liq-heading">Large positions. Little room.</h2></div><span class="chip">NATIVE CRYPTO PERPS</span></div>
+      <p class="section-note">Large public wallet positions close to their reported liquidation estimate. Verified directly on Hyperliquid; excludes XYZ/TradFi markets and spot. Prices can change with collateral, funding, and other positions.</p>
+      <div class="liq-status"><span id="liq-freshness" role="status">Loading crypto watch…</span><div><label><input id="liq-live" type="checkbox"> Live-check top 5 wallets / minute</label><a href="data/liquidations.json" download="crypto-liquidation-watch.json">Published JSON ↓</a><button id="liq-reload" type="button" class="text-button">Reload watch ↻</button></div></div>
+      <div id="liq-notice" class="notice" role="status" hidden></div>
+      <div class="liq-controls"><div><label for="liq-asset">Asset</label><select id="liq-asset"><option value="all">All crypto</option></select></div><div><label for="liq-distance">Within liquidation estimate</label><select id="liq-distance"><option value="0.01">1% adverse move</option><option value="0.03">3% adverse move</option><option value="0.05" selected>5% adverse move</option><option value="0.1">10% adverse move</option><option value="0.2">20% adverse move</option></select></div><div><label for="liq-minimum">Minimum open notional</label><select id="liq-minimum"><option value="100000">$100K</option><option value="500000">$500K</option><option value="1000000">$1M</option><option value="5000000">$5M</option></select></div><div><label for="liq-side">Side</label><select id="liq-side"><option value="all">Both sides</option><option value="long">Long</option><option value="short">Short</option></select></div><div><label for="liq-sort">Rank by</label><select id="liq-sort"><option value="size">Largest position</option><option value="distance">Closest estimate</option></select></div></div>
+      <div id="liq-kpis" class="liq-kpis" aria-label="Verified near-liquidation sample"></div>
+      <div class="liq-chart-grid"><section class="panel"><div class="panel-heading"><div><p class="eyebrow">ESTIMATED PRICE LEVELS / LARGEST 12</p><h3>Liquidation price ladder</h3></div><div><label for="liq-chart-asset" class="sr-only">Price-ladder asset</label><select id="liq-chart-asset"></select></div></div><div id="liq-ladder" class="liq-ladder"></div><p class="footnote chart-note">One asset at a time so prices share a meaningful axis. Point size indicates open notional; rows rank by size. Dashed line is the newest verified mark in the displayed sample.</p></section><section class="panel"><div class="panel-heading"><div><p class="eyebrow">FILTERED SAMPLE / USD GROSS NOTIONAL</p><h3>How close is the exposure?</h3></div></div><div id="liq-distance-chart" class="liq-distance-chart"></div><p class="footnote chart-note">Long and short position notionals by adverse price move to the estimate. This is gross exposure in the verified sample—not collateral at risk or predicted liquidation volume.</p></section></div>
+      <div class="panel liq-table-panel"><p class="coverage-strip" id="liq-coverage"></p><div class="table-scroll"><table><thead><tr><th scope="col">Wallet</th><th scope="col">Trade</th><th scope="col">Open notional ↓</th><th scope="col">Verified mark</th><th scope="col">Est. liquidation price</th><th scope="col">Adverse move needed</th><th scope="col">Unrealized PnL</th><th scope="col">Leverage / mode</th><th scope="col">Verified / UTC</th></tr></thead><tbody id="liq-rows"></tbody></table></div><button type="button" class="more-button" id="more-liquidations" hidden>Show more verified positions ↓</button></div>
+      <details class="method-details"><summary>Coverage, liquidation estimates &amp; low-cost refresh</summary><div class="reading-guide"><p id="liq-method"></p><p><strong>Distance.</strong> For a long: (mark − liquidation) ÷ mark. For a short: (liquidation − mark) ÷ mark. Mark comes from the same account response as the liquidation estimate. A crossed estimate is labeled “at/beyond,” not asserted to be a completed liquidation. Missing/null liquidation prices are not treated as zero risk.</p><p><strong>Refresh.</strong> Public snapshots are scheduled every 15 minutes; GitHub may delay runs. This watch checks for a new published file every minute while visible. Optional live checks read at most five displayed native wallets per minute directly from the free public Info API. Only verified replies update rows; closed positions disappear. No fill-history scan, broker key, or paid RPC is needed.</p><p><strong>Cost.</strong> This is a public repository on standard GitHub-hosted runners, which have free Actions compute under <a href="https://docs.github.com/en/billing/concepts/product-billing/github-actions" target="_blank" rel="noopener noreferrer">GitHub’s published policy</a>. The fast job creates no new cache or artifact uploads. Full trader-history screening stays on its slower schedule; broker collection stays end-of-day.</p></div></details>
     </section>
 
     <section id="xyz" class="section" aria-labelledby="xyz-heading"><div class="section-head"><div><p class="eyebrow">02 / XYZ SPECIALISTS</p><h2 id="xyz-heading">Profitable. Mostly xyz.</h2></div><span class="chip">30-DAY WINDOW</span></div><p class="section-note">Positive 30-day account PnL. More than 50% of executed perp volume on <code>xyz:</code> markets. Complete available fill windows required.</p>

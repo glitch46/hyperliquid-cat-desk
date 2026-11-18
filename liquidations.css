@@ -1,0 +1,37 @@
+.liq-status{border-top:1px solid var(--line);border-bottom:1px solid var(--line);padding:13px 0;display:flex;align-items:center;justify-content:space-between;gap:16px;font:9px/1.8 var(--mono);color:var(--muted)}
+.liq-status>div{display:flex;align-items:center;gap:20px}
+.liq-status label{display:flex;gap:7px;align-items:center;cursor:pointer}
+.liq-status input{accent-color:var(--mint);margin:0}
+.liq-controls{display:flex;flex-wrap:wrap;gap:14px 20px;margin:21px 0}
+.liq-controls>div{display:flex;flex-direction:column;gap:6px}
+.liq-controls label{font:9px var(--mono);color:var(--muted)}
+.liq-controls select{font-size:10px;padding-top:8px;padding-bottom:8px}
+.liq-kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:0 0 18px}
+.liq-kpis article{padding:17px 18px;border:1px solid var(--line);background:var(--panel);min-width:0}
+.liq-kpis article>p{font:8px/1.8 var(--mono);letter-spacing:.4px;color:var(--muted)}
+.liq-kpis strong{font:25px var(--mono);display:block;letter-spacing:-.7px;margin:9px 0 7px;font-weight:400}
+.liq-kpis small{display:block;color:var(--muted);font-size:10px;line-height:1.7}
+.liq-chart-grid{display:grid;grid-template-columns:1.25fr 1fr;gap:18px}
+.liq-chart-grid>.panel{min-width:0}
+.liq-chart-grid .panel-heading{padding-bottom:8px}
+.liq-chart-grid .panel-heading h3{font-size:18px}
+.liq-chart-grid .panel-heading .eyebrow{font-size:8px;letter-spacing:1px}
+.liq-ladder{padding:0 15px 0 20px}
+.liq-distance-chart{padding:0 8px}
+.liq-chart-grid svg{display:block;width:100%;height:auto;overflow:visible;font-family:var(--mono);font-variant-numeric:tabular-nums}
+.liq-svg-wallet{font-size:10px;fill:var(--text)}
+.liq-svg-small{font-size:8px;fill:var(--muted)}
+.liq-svg-heading{font-size:11px;fill:var(--sand)}
+.liq-svg-price{font-size:8px;fill:var(--text)}
+.liq-svg-value{font-size:11px;fill:var(--text)}
+.liq-chart-grid circle:focus{outline:2px solid var(--sand);outline-offset:2px}
+.liq-chart-grid .chart-note{margin:12px 22px 19px;font-size:9px}
+.liq-empty{min-height:150px;display:flex;align-items:center;justify-content:center;padding:25px;text-align:center;font-size:12px;color:var(--muted)}
+.liq-table-panel{margin-top:18px}
+.liq-verify{display:block;font-size:9px;margin-top:6px}
+.liq-price{color:var(--sand)}
+.liq-close{color:#efb788}
+.liq-table-panel td{padding-top:15px;padding-bottom:15px}
+.liq-table-panel .wallet-name{max-width:175px}
+@media(max-width:1100px){.liq-status{align-items:flex-start;flex-direction:column;gap:8px}.liq-kpis{grid-template-columns:1fr 1fr}.liq-chart-grid{grid-template-columns:1fr}.liq-ladder{max-width:850px}.liq-distance-chart{max-width:650px}.liq-chart-grid .chart-note{max-width:760px}}
+@media(max-width:760px){.liq-status{font-size:8px}.liq-status>div{width:100%;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}.liq-status label{font-size:8px}.liq-controls{display:grid;grid-template-columns:1fr 1fr;gap:14px 10px;margin-top:17px}.liq-controls select{width:100%;min-width:0;font-size:9px;padding-right:15px}.liq-controls label{font-size:8px;line-height:1.6}.liq-kpis{gap:10px}.liq-kpis article{padding:13px}.liq-kpis article>p{font-size:7px;letter-spacing:0}.liq-kpis strong{font-size:clamp(18px,5.5vw,24px)}.liq-kpis small{font-size:9px}.liq-chart-grid{gap:14px}.liq-chart-grid .panel-heading{padding:16px 12px 8px}.liq-chart-grid .panel-heading h3{font-size:17px}.liq-chart-grid .panel-heading .eyebrow{font-size:7px;letter-spacing:.4px}.liq-ladder{padding:0 6px}.liq-chart-grid .chart-note{margin:12px;font-size:9px}.liq-ladder svg{min-width:530px}.liq-ladder{overflow-x:auto}.liq-distance-chart{padding:0 4px}.liq-status .text-button{font-size:9px}.liq-table-panel .coverage-strip{font-size:9px}}

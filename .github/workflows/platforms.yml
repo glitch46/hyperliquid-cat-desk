@@ -50,7 +50,12 @@ jobs:
           git add data/platforms.json data/platforms_history.json
           if ! git diff --cached --quiet; then
             git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Refresh cross-platform snapshot'
-            git push
+            for attempt in 1 2 3; do
+              git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' pull --rebase origin main
+              if git push; then exit 0; fi
+              sleep 3
+            done
+            exit 1
           fi
       - name: Surface collection failures
         if: steps.collect.outcome == 'failure'
