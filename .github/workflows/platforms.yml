@@ -1,0 +1,36 @@
+name: Refresh cross-platform data
+
+on:
+  schedule:
+    - cron: '40 22 * * 1-5'
+  workflow_dispatch:
+    inputs:
+      probe_only:
+        description: 'Check public eToro endpoint access without publishing'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hyperliquid-refresh
+  cancel-in-progress: false
+
+jobs:
+  platforms:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check public eToro endpoint access
+        if: inputs.probe_only == true
+        env:
+          ETORO_API_KEY: ${{ secrets.ETORO_API_KEY }}
+          ETORO_USER_KEY: ${{ secrets.ETORO_USER_KEY }}
+        run: python -u scripts/etoro.py
