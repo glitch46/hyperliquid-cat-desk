@@ -16,6 +16,8 @@ The dedicated **[xyz cohort desk](xyz.html)** is at **http://localhost:8080/xyz.
 
 The **[cross-platform desk](platforms.html)** is at **http://localhost:8080/platforms.html**, under **XYZ desk → Across platforms** on every page.
 
+The **[Coinbase Seller](coinbase-seller.html)** tab is at **http://localhost:8080/coinbase-seller.html**.
+
 To update:
 
 ```powershell
@@ -44,10 +46,11 @@ The scan is intentionally paced below Hyperliquid's shared 1,200-weight/minute I
 
 ## Navigation
 
-All three pages share one menu. The `<nav id="site-nav">` markup is identical in `index.html`, `xyz.html`, and `platforms.html`; behavior lives in `nav.js`.
+All four pages share one menu. The links in `<nav id="site-nav">` match across `index.html`, `xyz.html`, `platforms.html`, and `coinbase-seller.html`; behavior lives in `nav.js`.
 
 - **Overview** → dashboard home, where the money sits, asset allocation, inside the book, largest open positions, **Crypto liquidation watch**
 - **XYZ desk** → cohort matrix, pair breakdown, open trades, **TradFi markets**, xyz specialists, **Across platforms**
+- **Coinbase Seller** → BTC transfer receipts, watched-address balances, and public seller evidence
 - **Sources** → data sources, coverage & method
 
 Cohorts is no longer a separate top-level item: its four section links now sit under **Overview**, keeping the bar at three dropdowns.
@@ -72,6 +75,18 @@ The first source's `cohortMetrics` contains per-pair exposure across both size a
 The second source is a **public position sample**, separately labeled and deduplicated. Cohort membership uses its profile segment IDs. Visible sample trades are never summed as a substitute for aggregate cohort exposure. A sample's empty filter result is not evidence of a flat cohort.
 
 The existing full refresh and `--cohorts-only` refresh both update `snapshot.xyz`. The cross-platform desk has an independent daily collector, so it needs no trader-fill rescan.
+
+## Coinbase Seller investigation
+
+The tab follows two Bitcoin addresses associated by public reporting and a verifiable co-spend. Mempool.space provides confirmed transactions; Blockstream cross-checks address balances. The collector deduplicates transactions, counts incoming credits by receiving address, compares two completed seven-day UTC windows, and traces up to six exact hub outputs to their first spends. The hub’s unrelated balance is excluded. Missing labels leave Coinbase deposit amounts unknown. Coinbase BTC-USD candles and recent anonymous public trades, plus optional Farside ETF figures, provide market context.
+
+MARA's dated filings confirm company sales and prior holdings; they do not identify the execution venue or current holdings. An empty relay and the arithmetic difference between reported holdings and sales cannot establish a treasury depletion date. The case configuration and source links are in `data/seller_case.json`. Refresh locally with:
+
+```powershell
+python -u scripts/coinbase_seller.py --max-requests 80
+```
+
+The hourly workflow writes `data/coinbase_seller.json`. On GitHub Pages the browser checks both the deployed copy and public `main`, using the newer valid snapshot so data updates do not depend on a Pages rebuild. Retained observations keep their original dates; the evidence download matches the snapshot shown.
 
 ## Crypto liquidation watch and frequent public refresh
 
@@ -227,6 +242,7 @@ Published from this repository with GitHub Pages (default branch, root):
 - Dashboard: **https://glitch46.github.io/hyperliquid-cat-desk/**
 - xyz cohort desk: **https://glitch46.github.io/hyperliquid-cat-desk/xyz.html**
 - Cross-platform desk: **https://glitch46.github.io/hyperliquid-cat-desk/platforms.html**
+- Coinbase Seller: **https://glitch46.github.io/hyperliquid-cat-desk/coinbase-seller.html** (available once the tab is deployed)
 - Repo: **https://github.com/glitch46/hyperliquid-cat-desk**
 
 The frequent public workflow runs every fifteen minutes; the full Hyperliquid workflow runs every four hours at minute 17; the broker workflow runs after the US close on weekdays. All support manual runs. Full/broker runs share their existing concurrency group; frequent refresh is independent and uses disjoint files plus rebase-before-push. The broker workflow uses the two eToro secrets; fast refresh uses none. The normal `GITHUB_TOKEN` publishes public JSON with Contents: write. A partial refresh retains dated last-good sections and surfaces failures.
@@ -241,6 +257,7 @@ node --check xyz.js
 node --check platforms.js
 node --check liquidations.js
 node --check data-feed.js
+node --check coinbase-seller.js
 ```
 
 Tests cover executed-notional accounting, spot exclusion, cross-venue denominators, fill-boundary deduplication, retention caps, incomplete history, failed requests, signed positions, allocation reconciliation, per-pair net exposure, overlapping cohort exclusion, missing versus flat cohorts, duplicate rejection, and sample deduplication. Browser checks should also cover matrix/pair selection, top-10/top-20 views, trade filters, navigation between dashboards, stale/missing data, and mobile scrolling.

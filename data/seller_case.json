@@ -1,0 +1,82 @@
+{
+  "caseId": "coinbase-btc-seller",
+  "title": "Coinbase Seller",
+  "researchDate": "2026-11-20",
+  "hypothesis": "A single entity is responsible for recent selling primarily on Coinbase; MARA is a lead based on its disclosures and public reporting, not an established attribution.",
+  "watchedAddresses": [
+    {
+      "address": "bc1qw6akqnpn20gq58v5feun308qzufjzls0ffpcww",
+      "label": "Reported MARA-linked relay",
+      "role": "reported_relay",
+      "attribution": "Published report associates this relay route with MARA-linked wallets; not a company-signed ownership attestation.",
+      "source": "https://news.bitcoin.com/mining/mara-bitcoin-1000-btc-exchanges-shares-sink/",
+      "sourceDate": "2026-10-19"
+    },
+    {
+      "address": "bc1qmaep5xk4ackyy8cr5rlpgxmjmc2wxtm3sw2lp8",
+      "label": "Recurring co-input / return address",
+      "role": "coinput_link",
+      "attribution": "Co-spent with the reported relay and received a return output. Common-input linkage is a control heuristic, not proof of MARA beneficial ownership.",
+      "source": "https://mempool.space/tx/394999496019a225db619d6d893d0a9e731bc54dbe5eaa5e3c4c2a972df926c1",
+      "sourceDate": "2026-11-11"
+    }
+  ],
+  "hubAddress": "bc1qyv8cmnv5hv9axy0uqjmfqpwkd5ysq6kejxvpg3",
+  "hubLabel": "Observed downstream hub / owner unverified",
+  "hubNote": "This hub has substantial unrelated activity. Its balance and unrelated transactions must not be attributed to MARA or the watched sender.",
+  "coinputProofTxid": "394999496019a225db619d6d893d0a9e731bc54dbe5eaa5e3c4c2a972df926c1",
+  "coinbaseTargets": [],
+  "coinbaseTargetNote": "No current destination address has been independently established as Coinbase in this watchset. Coinbase-specific deposit amounts are unknown, not zero.",
+  "mara": {
+    "quarterStart": "2026-07-01",
+    "quarterEnd": "2026-09-30",
+    "publicationDate": "2026-11-09",
+    "postQuarterStart": "2026-10-01",
+    "postQuarterEnd": "2026-11-09",
+    "letterUrl": "https://ir.mara.com/sec-filings/all-sec-filings/content/0001507605-26-000026/q326shareholderletter.htm",
+    "reportUrl": "https://ir.mara.com/sec-filings/all-sec-filings/content/0001507605-26-000028/mara-20260930.htm",
+    "releaseUrl": "https://ir.mara.com/news-events/press-releases/detail/1430/mara-announces-third-quarter-2026-results",
+    "financingUrl": "https://ir.mara.com/sec-filings/all-sec-filings/content/0000950142-26-003100/eh260856708_8k.htm",
+    "financingDate": "2026-11-17"
+  },
+  "etfBaseline": {
+    "observedAt": "2026-11-20",
+    "sourceUrl": "https://farside.co.uk/btc/",
+    "daily": [
+      {"date": "2026-11-06", "ibitUsdMillions": -403.0, "totalUsdMillions": -411.9, "completeFunds": true},
+      {"date": "2026-11-09", "ibitUsdMillions": -213.2, "totalUsdMillions": -201.0, "completeFunds": true},
+      {"date": "2026-11-10", "ibitUsdMillions": -78.2, "totalUsdMillions": -95.0, "completeFunds": true},
+      {"date": "2026-11-11", "ibitUsdMillions": -269.7, "totalUsdMillions": -299.8, "completeFunds": true},
+      {"date": "2026-11-12", "ibitUsdMillions": -203.8, "totalUsdMillions": -284.1, "completeFunds": true},
+      {"date": "2026-11-13", "ibitUsdMillions": -143.5, "totalUsdMillions": -185.4, "completeFunds": true},
+      {"date": "2026-11-16", "ibitUsdMillions": 76.5, "totalUsdMillions": 7.9, "completeFunds": true},
+      {"date": "2026-11-17", "ibitUsdMillions": -209.5, "totalUsdMillions": -239.9, "completeFunds": true},
+      {"date": "2026-11-18", "ibitUsdMillions": -148.7, "totalUsdMillions": -306.5, "completeFunds": true},
+      {"date": "2026-11-19", "ibitUsdMillions": -541.1, "totalUsdMillions": -582.3, "completeFunds": true}
+    ],
+    "method": "Dated observations transcribed from Farside's daily table on Nov 20. This is fund flow, not attributed trading volume."
+  },
+  "otherEvidence": [
+    {
+      "title": "Historical venue labels on the watched route",
+      "date": "2026-10-19",
+      "url": "https://news.bitcoin.com/mining/mara-bitcoin-1000-btc-exchanges-shares-sink/",
+      "sourceType": "Secondary report citing on-chain tracking",
+      "finding": "The article labeled 100 of 1,000 BTC in two October batches as Coinbase, versus 550 Binance and 350 Gate. These historical labels were not independently verified and cannot be carried forward to November transfers."
+    },
+    {
+      "title": "Reported ETF-linked transfers to Coinbase Prime",
+      "date": "2026-11-18",
+      "url": "https://blockchain.news/flashnews/blackrock-transfers-315m-btc-eth-coinbase-prime",
+      "sourceType": "Secondary report citing OnchainLens",
+      "finding": "Reports 4,482 BTC moved from ETF-linked wallets to Coinbase Prime. No transaction IDs were available in the inspected article; this amount is not counted as an independently verified deposit here. ETF custody/settlement movements are not BlackRock proprietary-company sales."
+    },
+    {
+      "title": "MARA routes to multiple institutional services",
+      "date": "2026-11-05",
+      "url": "https://themarketperiodical.com/2026/11/05/bitcoin-news-mara-transfers-1650-btc-worth-1328m-amid-ai-computing-pivot/",
+      "sourceType": "Secondary report citing Lookonchain",
+      "finding": "Reports 1,650 BTC transferred to Galaxy Digital, Copper, and other recipients. It does not establish a Coinbase-only route or completed sales. This report is context, not a substitute for transaction-level verification."
+    }
+  ]
+}

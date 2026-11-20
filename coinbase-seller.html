@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1514">
+  <meta name="description" content="Coinbase Seller: a sourced BTC investigation into MARA disclosures, watched-address transfers, remaining linked balances, and whether selling pressure is easing.">
+  <title>Coinbase Seller — Cat Desk</title>
+  <link rel="icon" href="assets/cat-detective.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="coinbase-seller.css">
+  <script src="nav.js" defer></script>
+  <script src="coinbase-seller.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#seller-findings">Skip to investigation findings</a>
+  <header class="topbar">
+    <a class="brand" href="index.html"><img src="assets/cat-detective.svg" width="34" height="34" alt=""><span>CAT DESK<span class="brand-divider">/</span><span class="brand-network">HYPERLIQUID</span></span></a>
+    <button class="nav-burger" type="button" aria-expanded="false" aria-controls="site-nav">MENU</button>
+    <nav id="site-nav" aria-label="Main navigation">
+      <div class="nav-dd"><button type="button" aria-expanded="false">Overview</button><div class="nav-menu">
+        <a href="index.html">Dashboard home</a>
+        <a href="index.html#cohorts">Where the money sits</a>
+        <a href="index.html#allocation">Asset allocation</a>
+        <a href="index.html#book">Inside the book</a>
+        <a href="index.html#positions">Largest open positions</a>
+        <a href="index.html#liquidations">Crypto liquidation watch</a>
+      </div></div>
+      <div class="nav-dd"><button type="button" aria-expanded="false">XYZ desk</button><div class="nav-menu">
+        <a href="xyz.html#matrix">Cohort matrix</a>
+        <a href="xyz.html#pair-detail">Pair breakdown</a>
+        <a href="xyz.html#pair-trades">Open trades</a>
+        <a href="xyz.html#tradfi">TradFi markets</a>
+        <a href="index.html#xyz">xyz specialists</a>
+        <a href="platforms.html">Across platforms</a>
+      </div></div>
+      <a href="coinbase-seller.html" class="seller-tab" aria-current="page">Coinbase Seller</a>
+      <div class="nav-dd"><button type="button" aria-expanded="false">Sources</button><div class="nav-menu">
+        <a href="index.html#sources">Data sources</a>
+        <a href="xyz.html#method">Coverage &amp; method</a>
+      </div></div>
+    </nav>
+    <span class="desk-tag">PUBLIC DATA · READ ONLY</span>
+  </header>
+  <main class="container">
+    <section class="hero" aria-labelledby="page-title"><div><p class="eyebrow">THE BITCOIN CASE DESK <span>/ 04</span></p><h1 id="page-title">Coinbase Seller</h1><p class="intro">Follow the BTC. Check the owner. Separate a transfer from a sale.</p></div><div class="hero-cat"><img src="assets/cat-detective.svg" width="92" height="92" alt="Detective cat mascot"><span>follow the evidence.</span></div></section>
+    <div class="statusbar"><span id="seller-freshness" role="status">Loading investigation…</span><div><a id="seller-download" href="data/coinbase_seller.json" download="coinbase-seller.json">Evidence JSON ↓</a><button id="seller-reload" class="text-button" type="button">Reload case ↻</button></div></div>
+    <div id="seller-notice" class="notice" role="status" hidden></div>
+    <noscript><p class="notice">Enable JavaScript or download the <a href="data/coinbase_seller.json">investigation data</a>.</p></noscript>
+    <section class="case-verdict" aria-labelledby="verdict-heading"><p class="eyebrow">CURRENT EVIDENCE VERDICT</p><h2 id="verdict-heading">The Coinbase seller remains unidentified</h2><p id="seller-verdict">Public Coinbase trades do not identify individual customers.</p><div class="case-tags"><a href="#seller-findings">Trace the deposits ↓</a><a href="#mara-inventory">Check MARA’s disclosures ↓</a><a href="#selling-end">What to watch next ↓</a></div></section>
+    <section id="seller-kpis" class="kpis" aria-label="Investigation facts"></section>
+
+    <section id="seller-findings" class="section" aria-labelledby="findings-heading"><div class="section-head"><div><p class="eyebrow">01 / THE TRAIL</p><h2 id="findings-heading">What has actually moved?</h2></div><span class="chip" id="seller-window"></span></div><p class="section-note">Fourteen completed UTC days for like-for-like weekly comparisons. Today’s partial day and recent trade tape are labeled separately. These address flows are not established Coinbase sales.</p>
+      <div id="flow-summary" class="flow-summary"></div>
+      <div class="seller-charts"><section class="panel"><div class="panel-heading"><div><p class="eyebrow">TWO-ADDRESS WATCHSET / BTC</p><h3>Deposits in. Forwarding out.</h3></div></div><div id="seller-flow-chart" class="seller-chart"></div><p class="footnote chart-note">Incoming transfers are external credits into the watchset. Forwarding is funding toward the configured downstream hub. Outputs returned to watched addresses are not counted again as external sales.</p></section><section class="panel"><div class="panel-heading"><div><p class="eyebrow">ADDRESS-SCOPE BALANCES / NOT TOTAL MARA BTC</p><h3>What remains in the watched route?</h3></div></div><div id="balance-chart" class="seller-chart"></div><p class="footnote chart-note">Relay and co-input balances are confirmed on-chain amounts. The co-spend relationship is a control heuristic, not proven MARA beneficial ownership. The downstream hub’s unrelated balance is excluded.</p></section></div>
+      <div class="panel address-panel"><div class="table-scroll"><table><thead><tr><th scope="col">Watched address / role</th><th scope="col">Confirmed BTC</th><th scope="col">Pending delta / BTC</th><th scope="col">History coverage</th><th scope="col">Provider agreement</th></tr></thead><tbody id="seller-address-rows"></tbody></table></div><p class="footnote table-footnote" id="address-attribution"></p></div>
+      <div class="panel ledger-panel"><div class="panel-heading"><div><p class="eyebrow">TRANSACTION-LEVEL RECEIPTS</p><h3>Source addresses and onward payments</h3></div><label><span class="sr-only">Transaction filter</span><select id="seller-tx-filter"><option value="all">All watched activity</option><option value="incoming">Incoming transfers ≥ 1 BTC</option><option value="forwarding">Forwarded to hub</option></select></label></div><p class="source-caption" id="ledger-coverage"></p><div class="table-scroll" tabindex="0" role="region" aria-label="Watched transaction receipts"><table><thead><tr><th scope="col">Block time / UTC</th><th scope="col">Transaction</th><th scope="col">External credit / BTC</th><th scope="col">Hub funding / BTC</th><th scope="col">Returned within watchset / BTC</th><th scope="col">Input addresses</th></tr></thead><tbody id="seller-tx-rows"></tbody></table></div><button class="more-button" type="button" id="seller-more-txs" hidden>Show more transactions ↓</button><p class="footnote table-footnote">Input addresses supplied the transaction, but individual input coins cannot be assigned to a specific output. Mixed-input funding is shown as bounds. “Returned” includes change or internal routing.</p></div>
+      <p id="ledger-funding-link" class="funding-link" hidden></p>
+      <section class="panel address-panel" aria-labelledby="hub-heading"><div class="panel-heading"><div><p class="eyebrow">EXACT BITCOIN OUTPOINTS</p><h3 id="hub-heading">Where the hub sent the coins next</h3></div></div><p id="hub-coverage" class="source-caption"></p><div class="table-scroll" tabindex="0" role="region" aria-label="First spends of watched hub outputs"><table><thead><tr><th scope="col">Hub receipt</th><th scope="col">First confirmed spend</th><th scope="col">Non-hub output(s) / BTC</th><th scope="col">Back to hub / BTC</th></tr></thead><tbody id="hub-spend-rows"></tbody></table></div><p class="footnote table-footnote">These are first-hop receipts, not exchange labels. Later movements and activity from unrelated hub inputs are outside this trace.</p></section>
+    </section>
+
+    <section id="mara-inventory" class="section" aria-labelledby="inventory-heading"><div class="section-head"><div><p class="eyebrow">02 / MARA PRIMARY DISCLOSURES</p><h2 id="inventory-heading">A treasury is bigger than one relay.</h2></div><a id="mara-letter" target="_blank" rel="noopener noreferrer">Shareholder letter ↗</a></div><p class="section-note">The company confirms sales, but its reporting window extends well beyond the watched fortnight. An empty transit address does not establish depleted company holdings.</p><div class="seller-charts"><section class="panel"><div class="panel-heading"><div><p class="eyebrow">DISCLOSURE-ONLY ARITHMETIC / BTC</p><h3>Inventory bridge—not today’s balance</h3></div></div><div id="inventory-chart" class="seller-chart"></div><p class="footnote chart-note" id="inventory-bridge-note"></p></section><section class="panel"><div class="panel-heading"><div><p class="eyebrow">DIFFERENT DISCLOSURE INTERVALS</p><h3>Was monetization accelerating?</h3></div></div><div id="mara-pace" class="mara-pace"></div><p class="footnote chart-note">Averages over the stated intervals, not a reconstructed daily execution schedule. They do not establish how much MARA sold in the latest seven days or on Coinbase.</p></section></div><div class="panel"><div class="table-scroll"><table><thead><tr><th scope="col">Disclosed fact</th><th scope="col">Value</th><th scope="col">Period / limitation</th></tr></thead><tbody id="mara-fact-rows"></tbody></table></div></div></section>
+
+    <section id="coinbase-context" class="section" aria-labelledby="context-heading"><div class="section-head"><div><p class="eyebrow">03 / VENUE CONTEXT</p><h2 id="context-heading">Coinbase pressure is not a customer identity.</h2></div><span class="chip">BTC-USD / PUBLIC EXCHANGE DATA</span></div><div id="coinbase-tape" class="coinbase-tape"></div><div class="panel"><div class="panel-heading"><div><p class="eyebrow">BTC-USD / COMPLETED UTC DAYS</p><h3>Coinbase price and executed volume</h3></div></div><div id="coinbase-market-chart" class="seller-chart"></div><p class="footnote chart-note">Volume is whole-venue BTC traded. Candle volume cannot identify sellers or distinguish buy/sell aggressors. The separate recent-tape sample reverses Coinbase’s maker-side field; it is not fourteen-day CVD.</p></div><div id="etf-context" class="panel etf-panel"></div></section>
+
+    <section id="selling-end" class="section" aria-labelledby="end-heading"><div class="section-head"><div><p class="eyebrow">04 / WHAT WOULD CHANGE THE CONCLUSION?</p><h2 id="end-heading">Will the selling end soon?</h2></div><span class="chip">CONDITIONAL EVIDENCE / NO END-DATE FORECAST</span></div><div id="end-signals" class="end-signals"></div><div class="case-bottom-line"><strong>Current conclusion</strong><p id="end-bottom-line"></p></div></section>
+
+    <section id="seller-sources" class="section source-section" aria-labelledby="sources-heading">
+      <div class="section-head"><div><p class="eyebrow">05 / EVIDENCE REGISTER</p><h2 id="sources-heading">Receipts before a name.</h2></div><img src="assets/cat-detective.svg" width="42" height="42" alt=""></div>
+      <div id="seller-source-list" class="seller-source-list"></div>
+      <details class="method-details"><summary>Scope, refresh and attribution rules</summary><div class="reading-guide">
+        <p><strong>Scope.</strong> Public Coinbase trades do not expose customer IDs. This investigation follows a public lead: one relay cited in coverage of MARA and a second address observed co-spending with it. Neither a co-spend nor a transfer to a custodian establishes who sold BTC.</p>
+        <p><strong>On-chain accounting.</strong> Transactions are deduplicated across both address histories. Fees, return outputs, external funding, and hub outputs are calculated separately in integer satoshis. Mixed inputs yield funding bounds. Without verified destination labels, Coinbase deposits are unknown.</p>
+        <p><strong>Inventory.</strong> The watched balance excludes unrelated hub inventory. The treasury arithmetic uses reported holdings minus disclosed later sales and does not count previously pledged BTC again. Unreported production, later sales, and other balance changes are outside that calculation.</p>
+        <p><strong>Refresh.</strong> The collector is scheduled hourly. The browser rechecks the published snapshot every ten minutes while visible. Failed sources keep the most recent observations with their original dates.</p>
+      </div></details>
+    </section>
+    <footer><a class="footer-brand" href="index.html">/\_/\ &nbsp; CAT DESK</a><span>Coinbase Seller · public evidence</span><span id="seller-build-time"></span></footer>
+  </main>
+</body>
+</html>

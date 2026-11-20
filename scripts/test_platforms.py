@@ -138,14 +138,15 @@ class PublicSourceTests(unittest.TestCase):
 
 
 class NavigationTests(unittest.TestCase):
-    def test_all_three_pages_have_the_same_navigation(self):
+    def test_all_pages_have_the_same_navigation(self):
         navs = []
-        for name in ('index.html', 'xyz.html', 'platforms.html'):
+        for name in ('index.html', 'xyz.html', 'platforms.html', 'coinbase-seller.html'):
             text = (p.ROOT / name).read_text(encoding='utf-8')
-            navs.append(re.search(r'<nav id="site-nav".*?</nav>', text, re.S).group(0))
-        self.assertEqual(navs[0], navs[1])
-        self.assertEqual(navs[0], navs[2])
+            navs.append(re.search(r'<nav id="site-nav".*?</nav>', text, re.S).group(0).replace(' aria-current="page"', ''))
+        for nav in navs[1:]:
+            self.assertEqual(navs[0], nav)
         self.assertEqual(navs[0].count('href="platforms.html"'), 1)
+        self.assertEqual(navs[0].count('href="coinbase-seller.html"'), 1)
 
     def test_all_shared_navigation_destinations_exist(self):
         text = (p.ROOT / 'index.html').read_text(encoding='utf-8')
